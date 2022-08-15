@@ -16,6 +16,7 @@
     <properties>
         <java.version>18</java.version>
     </properties>
+    <packaging>pom</packaging>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -47,5 +48,8 @@
             </plugin>
         </plugins>
     </build>
+    <modules>
+        <module>testmodule</module>
+    </modules>
 
 </project>
