@@ -1,7 +1,8 @@
 package com.example.config;
 
+import com.example.domain.SsbNace;
 import com.example.model.SsbNaceCsv;
-import com.example.reader.FirstItemReader;
+import com.example.processor.SsbNaceProcessor;
 import com.example.writer.FirstItemWriter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -39,47 +40,30 @@ public class SampleJob  {
     private FirstItemWriter firstItemWriter;
 
     @Bean
-    public Job firstJob(){
-        return jobBuilderFactory.get("First Job")
-                .start(firstStep())
-                .next(firstChunkStep())
-                .build();
-    }
-
-    @Bean
-    Step firstStep(){
-        return stepBuilderFactory.get("First Step")
-                .tasklet(firstTask())
+    public Job ssbNaceJob(){
+        return jobBuilderFactory.get("Ssb Nace Job")
+                .start(ssbNaceStep())
                 .build();
     }
     @Bean
-    Tasklet firstTask() {
-        return new Tasklet() {
-
-            @Override
-            public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                System.out.println("This is first tasklet step");
-                return RepeatStatus.FINISHED;
-            }
-        };
+    public SsbNaceProcessor ssbNaceProcessor() {
+        return new SsbNaceProcessor();
     }
-
     @Bean
-    Step firstChunkStep() {
+    Step ssbNaceStep() {
         return stepBuilderFactory.get("First chunk step")
-                .<SsbNaceCsv,SsbNaceCsv>chunk(5)
-                .reader(flatFileItemReader(null))
+                .<SsbNaceCsv, SsbNace>chunk(5)
+                .reader(flatFileItemReader())
+                .processor(ssbNaceProcessor())
                 .writer(firstItemWriter)
                 .build();
     }
-
     @StepScope
     @Bean
-    public FlatFileItemReader<SsbNaceCsv> flatFileItemReader(
-            @Value("#{jobParameters['inputFile']}") FileSystemResource fileSystemResource) {
+    public FlatFileItemReader<SsbNaceCsv> flatFileItemReader() {
 
         FlatFileItemReader<SsbNaceCsv> flatFileItemReader = new FlatFileItemReader<SsbNaceCsv>();
-        flatFileItemReader.setResource(fileSystemResource);
+        flatFileItemReader.setResource(new FileSystemResource("testmodule/inputFiles/30.csv"));
         flatFileItemReader.setLinesToSkip(1);
         flatFileItemReader.setLineMapper(new DefaultLineMapper<SsbNaceCsv>() {
             {
@@ -96,5 +80,4 @@ public class SampleJob  {
         });
         return flatFileItemReader;
     }
-
 }
