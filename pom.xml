@@ -57,6 +57,9 @@
     </build>
     <modules>
         <module>testmodule</module>
+        <module>persondata</module>
+        <module>persondata</module>
+        <module>persondata</module>
     </modules>
 
 </project>
